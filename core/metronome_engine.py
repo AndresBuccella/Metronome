@@ -1,13 +1,12 @@
-import time, threading, queue
+import time
+import threading
+import queue
 
-class MetronomeEngine:
-    def __init__(self, bpm: int, interval, out_queue: queue.Queue):
-        self.interval = 60 / bpm * interval
+class Metronome_Engine:
+    def __init__(self, bpm: int, out_queue: queue.Queue):
+        self.interval = 60 / bpm
         self.queue = out_queue
         self.running = False
-    
-    def set_bpm(self, interval, bpm: int):
-        self.interval = 60 / bpm * interval
 
     def start(self):
         if self.running:
@@ -26,7 +25,10 @@ class MetronomeEngine:
                 time.sleep(sleep)
 
             if not self.queue.full():
-            # 🔑 solo emite el evento
-                self.queue.put_nowait("tick")
+                if self.running:
+                    self.queue.put_nowait("tick")
 
             next_tick += self.interval
+
+    def set_bpm(self, bpm: int):
+        self.interval = 60 / bpm
